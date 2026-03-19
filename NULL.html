@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TERMINAL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:      #00c832;
+      --bg:         #0a0a0a;
+      --gray:       #0d0d0d;
+      --border:     #1c2a1c;
+      --text-muted: #3a5a3a;
+      --text-body:  #789a78;
+      --amber:      #bb8800;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      background-color: var(--bg);
+      color: var(--green);
+      font-family: 'Share Tech Mono', monospace;
+      overflow-x: hidden;
+    }
+
+    /* Scanlines */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.13) 2px,
+        rgba(0,0,0,0.13) 4px
+      );
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* Grid background */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,50,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,50,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 0;
+    }
+
+    @keyframes flicker {
+      0%,100% { opacity: 1; }
+      93%     { opacity: 0.88; }
+      94%     { opacity: 1; }
+    }
+
+    /* Full page layout */
+    .terminal-page {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 52px 64px 0;
+      animation: flicker 9s infinite;
+    }
+
+    /* Heading */
+    .heading-wrap {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-family: 'VT323', monospace;
+      font-size: clamp(2.2rem, 5.5vw, 3.6rem);
+      letter-spacing: 8px;
+      color: var(--green);
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      font-size: 11px;
+      letter-spacing: 5px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      text-transform: uppercase;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 0 28px;
+    }
+
+    /* Prompt */
+    .prompt-line {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+    .prompt-line .usr  { color: var(--green); }
+    .prompt-line .host { color: var(--amber); }
+
+    /* Typewriter */
+    .typewriter-wrap {
+      flex: 1;
+      padding-bottom: 80px;
+    }
+
+    #typed-text {
+      font-size: 14.5px;
+      line-height: 2;
+      color: var(--text-body);
+      letter-spacing: 0.4px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-width: 880px;
+    }
+
+    #cursor {
+      display: inline-block;
+      width: 9px;
+      height: 1em;
+      background: var(--green);
+      vertical-align: text-bottom;
+      margin-left: 2px;
+      animation: blink 0.75s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0; }
+    }
+
+    /* Status bar — pinned to bottom */
+    .status-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 64px;
+      border-top: 1px solid var(--border);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: var(--gray);
+      z-index: 200;
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<div class="terminal-page">
+
+  <div class="heading-wrap">
+    <h1>NULL OP</h1>
+    <div class="subtitle">Classified &nbsp;|&nbsp; Encrypted &nbsp;|&nbsp; BEAST-07</div>
+  </div>
+
+  <hr class="divider"/>
+
+  <div class="prompt-line">
+    <span class="usr">root</span>@<span class="host">cipher</span>:~$ cat mission_brief.log
+  </div>
+
+  <div class="typewriter-wrap">
+    <span id="typed-text"></span><span id="cursor"></span>
+  </div>
+
+</div>
+
+<div class="status-bar">
+  <div>LIVE // ENCRYPTED</div>
+  <div>SECTOR 7-G // NODE 0x4F2C</div>
+  <div id="clock">--:--:--</div>
+</div>
+
+<script>
+  const text = `Deep within the fractured lattice of the network, where data bleeds through corrupted nodes and forgotten protocols whisper in dead languages, a signal emerged.
+
+No origin. No signature. No trace.
+
+The ghost in the machine had awakened — not with fury, but with the cold, deliberate patience of code that has waited decades to execute. Systems that were never meant to talk began to synchronize. Firewalls crumbled like ash. The silence that followed was not the silence of absence, but of something listening.
+
+They call it GHOST PROTOCOL. A contingency buried so deep inside the old infrastructure that even its architects have long since been erased. It does not seek. It does not hunger. It simply... completes the directive. Whatever the cost. Whoever the target.
+
+The cursor blinks. The clock ticks. And somewhere in the dark, a process that cannot be killed runs without end.`;
+
+  const el = document.getElementById('typed-text');
+  let i = 0;
+
+  function type() {
+    if (i < text.length) {
+      el.textContent += text[i];
+      i++;
+      const delay = text[i - 1] === '\n' ? 110 :
+                    '.!?,;'.includes(text[i - 1]) ? 80 :
+                    Math.random() < 0.04 ? 70 : 26;
+      setTimeout(type, delay);
+    }
+  }
+
+  setTimeout(type, 400);
+
+  function updateClock() {
+    document.getElementById('clock').textContent =
+      new Date().toTimeString().slice(0, 8);
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+</script>
+
+</body>
+</html>
